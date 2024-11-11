@@ -28,63 +28,45 @@ class ListadoActivity : AppCompatActivity() {
         btnRegresar.setOnClickListener { regresar() }
     }//onCreate
     private fun listarContactos() {
-
-        //Instancia para obtener los datos del servidor
         val cliente = AsyncHttpClient()
-        cliente["http://192.168.90.88/androidConsultaMySql.php?", object :
-            AsyncHttpResponseHandler() {
-            override fun onSuccess(
-                statusCode: Int,
-                headers: Array<Header>,
-                responseBody: ByteArray
-            ) {
-
-                //El código 200 indica que hubo registros
+        cliente.get("http://192.168.100.68/androidConsultaMySql.php?", object : AsyncHttpResponseHandler() {
+            override fun onSuccess(statusCode: Int, headers: Array<Header>, responseBody: ByteArray) {
                 if (statusCode == 200) {
                     try {
-                        val x = responseBody.toString()
+                        val responseText = String(responseBody, Charsets.UTF_8)
+                        println("Server Response: $responseText")
 
-                        //Si existen registros como resultado de la busqueda
-                        if (x != "0") {
-                            var i = 0 //Contabilizar la cantidad de registros obtenidos
-                            val contactos =
-                                JSONArray(responseBody.toString())
-
-                            //ciclo para colocar la información dentro del TextView
-                            while (i < contactos.length()) {
-                                etListado.text.toString().plus("Contacto #${i
-                                        + 1}")
-                                etListado.text.toString().plus("Nombre: "+
-                                        contactos.getJSONObject(i).getString("Nombre"))
-                                etListado.text.toString().plus("Apellidos: "
-                                        + contactos.getJSONObject(i).getString("Apellidos"))
-                                etListado.text.toString().plus("Telefono: " +
-                                        contactos.getJSONObject(i).getString("Telefono"))
-                                etListado.text.toString().plus("Correo: " +
-                                        contactos.getJSONObject(i).getString("Email"))
-                                i++
-                            } //while
+                        if (responseText != "0") {
+                            val contactos = JSONArray(responseText)
+                            etListado.text = "" // Clear previous content
+                            for (i in 0 until contactos.length()) {
+                                val contacto = contactos.getJSONObject(i)
+                                etListado.append("Contacto #${i + 1}\n")
+                                etListado.append("Nombre: ${contacto.getString("Nombre")}\n")
+                                etListado.append("Apellidos: ${contacto.getString("Apellidos")}\n")
+                                etListado.append("Telefono: ${contacto.getString("Telefono")}\n")
+                                etListado.append("Correo: ${contacto.getString("Email")}\n\n")
+                            }
                         } else {
-                            Toast.makeText(
-                                this@ListadoActivity,"Contacto no encontrado.",Toast.LENGTH_SHORT).show()
-                        } //else
+                            Toast.makeText(this@ListadoActivity, "Contacto no encontrado.", Toast.LENGTH_SHORT).show()
+                        }
                     } catch (e: JSONException) {
-                        Toast.makeText(this@ListadoActivity,"Error al obtener información.",Toast.LENGTH_SHORT).show()
-                    } //catch
-                } //if
-                else {
-                    Toast.makeText(this@ListadoActivity,"Sin resultados en busqueda.",Toast.LENGTH_SHORT).show()
-                } //else
-            } //onSuccess
-            override fun onFailure(
-                statusCode: Int,
-                headers: Array<Header>,
-                responseBody: ByteArray,
-                error: Throwable
-            ) {
-            } //onFailure
-        }]
-    } //listarContactos
+                        println("JSON Exception: $e")
+                        Toast.makeText(this@ListadoActivity, "Error al obtener información.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@ListadoActivity, "Sin resultados en busqueda.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(statusCode: Int, headers: Array<Header?>?, responseBody: ByteArray?, error: Throwable?) {
+                val errorMsg = responseBody?.let { String(it, Charsets.UTF_8) } ?: "Unknown error"
+                println("Error: $errorMsg")
+                Toast.makeText(this@ListadoActivity, "Error de conexión.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
     private fun regresar() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)

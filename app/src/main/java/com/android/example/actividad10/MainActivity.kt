@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var requestQueue: RequestQueue
 
     //API del servidor MySQL
-    private val url = "http://{ponle tu ip}"
+    private val url = "http://192.168.100.68/"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
