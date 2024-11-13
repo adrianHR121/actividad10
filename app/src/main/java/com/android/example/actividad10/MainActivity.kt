@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var requestQueue: RequestQueue
 
-    private val baseUrl = "http://192.168.100.68/projects/actividad10/"
+    private val baseUrl = "http://192.168.100.29/practica10/"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

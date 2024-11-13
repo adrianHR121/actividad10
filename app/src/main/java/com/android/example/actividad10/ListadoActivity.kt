@@ -29,12 +29,12 @@ class ListadoActivity : AppCompatActivity() {
     }//onCreate
     private fun listarContactos() {
         val cliente = AsyncHttpClient()
-        cliente.get("http://192.168.100.68/androidConsultaMySql.php?", object : AsyncHttpResponseHandler() {
+        cliente.get("http://192.168.100.29/practica10/androidConsultaMySql.php?", object : AsyncHttpResponseHandler() {
             override fun onSuccess(statusCode: Int, headers: Array<Header>, responseBody: ByteArray) {
                 if (statusCode == 200) {
                     try {
                         val responseText = String(responseBody, Charsets.UTF_8)
-                        println("Server Response: $responseText")
+                        println("Server Response: $responseText")   
 
                         if (responseText != "0") {
                             val contactos = JSONArray(responseText)
